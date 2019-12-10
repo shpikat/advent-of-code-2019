@@ -23,7 +23,7 @@ public class Main {
         final BlockingQueue<Long> input = new ArrayBlockingQueue<>(100);
         final BlockingQueue<Long> output = new ArrayBlockingQueue<>(100);
         final Intcode computer = new Intcode(program, input, output);
-        input.put(1L);
+        input.put(2L);
         computer.call();
 
         System.out.println(output);
