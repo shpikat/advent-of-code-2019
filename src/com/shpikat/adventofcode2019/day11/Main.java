@@ -39,6 +39,7 @@ public class Main {
 
         final Map<Coordinate, Long> hull = new HashMap<>();
         final Robot robot = new Robot();
+        robot.paint(hull, WHITE);
 
         do {
             final Long current = robot.getCurrent(hull);
@@ -55,9 +56,33 @@ public class Main {
 
         // check for normal termination
         future.get();
-        System.out.println(hull.size());
+        print(hull);
         executor.shutdown();
     }
+
+    private static void print(final Map<Coordinate, Long> hull) {
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int maxY = Integer.MIN_VALUE;
+
+        for (Coordinate coordinate : hull.keySet()) {
+            minX = Math.min(minX, coordinate.x);
+            maxX = Math.max(maxX, coordinate.x);
+            minY = Math.min(minY, coordinate.y);
+            maxY = Math.max(maxY, coordinate.y);
+        }
+
+        for (int y = minY; y <= maxY; y++) {
+            for (int x = minX; x <= maxX; x++) {
+                final Long colour = hull.getOrDefault(new Coordinate(x, y), BLACK);
+                System.out.print(colour.equals(WHITE) ? '■' : ' ');
+            }
+
+            System.out.println();
+        }
+    }
+
 
     private static class Robot {
         private int x;
