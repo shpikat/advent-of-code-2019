@@ -1,7 +1,5 @@
 package com.shpikat.adventofcode2019.day13;
 
-import com.shpikat.adventofcode2019.day09.Intcode;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -18,8 +16,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class Main {
+
+    private static final int PADDLE = 3;
+    private static final int BALL = 4;
 
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException, ExecutionException {
         final Path path = Paths.get(Main.class.getResource("input.txt").toURI());
@@ -31,32 +33,50 @@ public class Main {
 
         final BlockingQueue<Long> input = new ArrayBlockingQueue<>(10);
         final BlockingQueue<Long> output = new ArrayBlockingQueue<>(10);
-        final Intcode arcade = new Intcode(program, input, output);
+        final Consumer<long[]> gameWizard = memory -> memory[0] = 2;
+        final Intcode arcade = new Intcode(program, input, output, gameWizard);
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final Future<Void> future = executor.submit(arcade);
 
         final Map<Coordinate, Long> grid = new HashMap<>();
 
+        long paddle = 0;
+        long score = 0;
         do {
             final Long x = output.poll(2, TimeUnit.SECONDS);
-            if (x == null && future.isDone()) {
+            if (x == null) {
+                if (!future.isDone()) {
+                    System.err.println("Time-out");
+                    future.cancel(true);
+                }
                 break;
             }
             final Long y = output.take();
-            final Long tileId = output.take();
+            final Long value = output.take();
+            if (x == -1 && y == 0) {
+                score = value;
+            } else {
+                if (value == PADDLE) {
+                    paddle = x;
+                } else if (value == BALL) {
+                    final long tilt = Long.compare(x, paddle);
+                    input.put(tilt);
+                }
 
-            grid.put(new Coordinate(x.intValue(), y.intValue()), tileId);
+                grid.put(new Coordinate(x.intValue(), y.intValue()), value);
+            }
         } while (!future.isDone());
 
         // check for normal termination
         future.get();
         executor.shutdown();
 
-        final long count = grid.values().stream()
-                .filter(tile -> tile == 2)
-                .count();
-        System.out.println(count);
+        if (grid.values().stream().anyMatch(tile -> tile == 2)) {
+            System.err.println("Not all blocks are cleared");
+        }
+
+        System.out.println(score);
     }
 
     private static class Coordinate {
