@@ -5,13 +5,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.function.LongBinaryOperator;
 
-class Intcode implements Callable<Void> {
+public class Intcode implements Callable<Void> {
 
     private final long[] program;
     private final BlockingQueue<Long> input;
     private final BlockingQueue<Long> output;
 
-    Intcode(final long[] program, final BlockingQueue<Long> input, final BlockingQueue<Long> output) {
+    public Intcode(final long[] program, final BlockingQueue<Long> input, final BlockingQueue<Long> output) {
         this.program = program;
         this.input = input;
         this.output = output;

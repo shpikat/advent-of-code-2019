@@ -1,5 +1,7 @@
 package com.shpikat.adventofcode2019.day11;
 
+import com.shpikat.adventofcode2019.day09.Intcode;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
