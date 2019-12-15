@@ -6,84 +6,71 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Main {
 
-    private static final int N = 3;
+    private static final int N_COORDINATES = 3;
 
     private static final Pattern pattern = Pattern.compile("^<x=([^,]+), y=([^,]+), z=([^>]+)>$");
 
     public static void main(String[] args) throws URISyntaxException, IOException {
         final Path path = Paths.get(Main.class.getResource("input.txt").toURI());
 
-        final List<Moon> moons = new ArrayList<>();
-        for (final String line : Files.readAllLines(path, StandardCharsets.ISO_8859_1)) {
-            final Matcher matcher = pattern.matcher(line);
+        final List<String> allLines = Files.readAllLines(path, StandardCharsets.ISO_8859_1);
+        final int nMoons = allLines.size();
+        final int[][] coordinates = new int[N_COORDINATES][nMoons];
+
+        for (int i = 0; i < allLines.size(); i++) {
+            final Matcher matcher = pattern.matcher(allLines.get(i));
             if (matcher.matches()) {
-                final int[] position = new int[N];
+                for (int j = 0; j < N_COORDINATES; j++) {
+                    coordinates[j][i] = Integer.parseInt(matcher.group(j + 1));
+                }
+            }
+        }
+
+        final long[] steps = new long[N_COORDINATES];
+        for (int coordinate = 0; coordinate < steps.length; coordinate++) {
+            final int[] original = coordinates[coordinate].clone();
+            final int[] position = original.clone();
+            final int[] velocity = new int[position.length];
+            final int[] empty = new int[velocity.length];
+
+            do {
+                steps[coordinate]++;
+                for (int i = 0; i < position.length - 1; i++) {
+                    for (int j = i + 1; j < position.length; j++) {
+                        final int deltaX = Integer.compare(position[i], position[j]);
+                        velocity[i] -= deltaX;
+                        velocity[j] += deltaX;
+                    }
+                }
+
                 for (int i = 0; i < position.length; i++) {
-                    position[i] = Integer.parseInt(matcher.group(i + 1));
+                    position[i] += velocity[i];
                 }
-                moons.add(new Moon(position));
-            }
+            } while (!(Arrays.equals(velocity, empty) && Arrays.equals(position, original)));
         }
 
-        final int nSteps = 1000;
-
-        for (int step = 0; step < nSteps; step++) {
-            for (int i = 0; i < moons.size() - 1; i++) {
-                for (int j = i + 1; j < moons.size(); j++) {
-                    Moon.applyGravity(moons.get(i), moons.get(j));
-                }
-            }
-
-            for (final Moon moon : moons) {
-                moon.applyVelocity();
-            }
-        }
-
-        final int totalEnergy = moons.stream()
-                .mapToInt(Moon::getTotalEnergy)
-                .sum();
-        System.out.println(totalEnergy);
-
+        System.out.println(getLcm(steps));
     }
 
-    private static class Moon {
-        private final int[] position;
-        private final int[] velocity = new int[N];
 
-        Moon(final int[] position) {
-            assert position.length == N;
-            this.position = position;
+    private static long getLcm(final long[] n) {
+        long lcm = n[0];
+        for (int i = 1; i < n.length; i++) {
+            final long step = n[i];
+            //noinspection SuspiciousIntegerDivAssignment
+            lcm *= step / getGcd(lcm, step);
         }
+        return lcm;
+    }
 
-        void applyVelocity() {
-            for (int i = 0; i < N; i++) {
-                position[i] += velocity[i];
-            }
-        }
-
-        int getTotalEnergy() {
-            int potential = 0;
-            int kinetic = 0;
-            for (int i = 0; i < N; i++) {
-                potential += Math.abs(position[i]);
-                kinetic += Math.abs(velocity[i]);
-            }
-            return potential * kinetic;
-        }
-
-        static void applyGravity(final Moon moon1, final Moon moon2) {
-            for (int i = 0; i < N; i++) {
-                final int deltaX = Integer.compare(moon1.position[i], moon2.position[i]);
-                moon1.velocity[i] -= deltaX;
-                moon2.velocity[i] += deltaX;
-            }
-        }
+    private static long getGcd(final long n1, final long n2) {
+        return n2 == 0 ? n1 : getGcd(n2, n1 % n2);
     }
 }
