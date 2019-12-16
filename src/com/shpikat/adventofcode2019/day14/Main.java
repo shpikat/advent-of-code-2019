@@ -18,6 +18,11 @@ public class Main {
 
     private static final Pattern pattern = Pattern.compile("(\\d+) ([A-Z]+)");
 
+    private static final long AMOUNT_ORE = 1_000_000_000_000L;
+
+    // calculated at part 1, could have been added here, too, but, eh...
+    private static final long MIN_ORE_PER_FUEL = 220019L;
+
     public static void main(String[] args) throws URISyntaxException, IOException {
         final Path path = Paths.get(Main.class.getResource("input.txt").toURI());
 
@@ -39,35 +44,43 @@ public class Main {
             reactions.put(part.material, new Reaction(part.amount, input));
         }
 
-        final Map<String, Integer> materialRequests = new HashMap<>();
-        final Map<String, Integer> leftOvers = new HashMap<>();
-        materialRequests.put("FUEL", 1);
-        int amountOre = 0;
-        while (!materialRequests.isEmpty()) {
-            final Iterator<Map.Entry<String, Integer>> iterator = materialRequests.entrySet().iterator();
-            final Map.Entry<String, Integer> request = iterator.next();
+        final Map<String, Long> materialRequests = new HashMap<>();
+        final Map<String, Long> leftOvers = new HashMap<>();
+        long amountOre = AMOUNT_ORE;
+        long amountFuel = 0L;
+        while (amountOre > 0) {
+            if (materialRequests.isEmpty()) {
+                final long moreFuel = amountOre / MIN_ORE_PER_FUEL;
+                if (moreFuel == 0) {
+                    break;
+                }
+                materialRequests.put("FUEL", moreFuel);
+                amountFuel += moreFuel;
+            }
+            final Iterator<Map.Entry<String, Long>> iterator = materialRequests.entrySet().iterator();
+            final Map.Entry<String, Long> request = iterator.next();
             iterator.remove();
             final String material = request.getKey();
-            final int amountNeeded = request.getValue();
-            final int currentLeftOver = leftOvers.getOrDefault(material, 0);
+            final long amountNeeded = request.getValue();
+            final long currentLeftOver = leftOvers.getOrDefault(material, 0L);
             if (amountNeeded <= currentLeftOver) {
                 leftOvers.put(material, currentLeftOver - amountNeeded);
             } else {
-                final int amountStillNeeded = amountNeeded - currentLeftOver;
+                final long amountStillNeeded = amountNeeded - currentLeftOver;
                 final Reaction reaction = reactions.get(material);
-                final int nReactionsRequired = (int) Math.ceil((double) amountStillNeeded / reaction.outputAmount);
+                final long nReactionsRequired = (long) Math.ceil((double) amountStillNeeded / reaction.outputAmount);
                 leftOvers.put(material, nReactionsRequired * reaction.outputAmount - amountStillNeeded);
                 for (final ReactionPart reactionPart : reaction.input) {
                     if (reactionPart.material.equals("ORE")) {
-                        amountOre += nReactionsRequired * reactionPart.amount;
+                        amountOre -= nReactionsRequired * reactionPart.amount;
                     } else {
-                        materialRequests.merge(reactionPart.material, nReactionsRequired * reactionPart.amount, Integer::sum);
+                        materialRequests.merge(reactionPart.material, nReactionsRequired * reactionPart.amount, Long::sum);
                     }
                 }
             }
         }
 
-        System.out.println(amountOre);
+        System.out.println(amountFuel);
     }
 
     private static ReactionPart getReactionPart(final Matcher matcher) {
