@@ -50,10 +50,7 @@ public class Main {
         long amountFuel = 0L;
         while (amountOre > 0) {
             if (materialRequests.isEmpty()) {
-                final long moreFuel = amountOre / MIN_ORE_PER_FUEL;
-                if (moreFuel == 0) {
-                    break;
-                }
+                final long moreFuel = Math.max(amountOre / MIN_ORE_PER_FUEL, 1);
                 materialRequests.put("FUEL", moreFuel);
                 amountFuel += moreFuel;
             }
@@ -80,7 +77,7 @@ public class Main {
             }
         }
 
-        System.out.println(amountFuel);
+        System.out.println(amountOre == 0 ? amountFuel : amountFuel - 1);
     }
 
     private static ReactionPart getReactionPart(final Matcher matcher) {
