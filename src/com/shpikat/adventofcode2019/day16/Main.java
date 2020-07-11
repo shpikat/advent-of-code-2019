@@ -12,9 +12,14 @@ public class Main {
     public static void main(String[] args) throws URISyntaxException, IOException {
         final Path inputPath = Paths.get(Main.class.getResource("input.txt").toURI());
         final String input = Files.readString(inputPath, StandardCharsets.ISO_8859_1).trim();
-        int[] data = new int[input.length()];
+        final int offset = Integer.parseInt(input.substring(0, 7));
+        int replicationFactor = 10_000;
+        int[] data = new int[input.length() * replicationFactor];
         for (int i = 0; i < input.length(); i++) {
             data[i] = input.charAt(i) - '0';
+        }
+        for (int i = 1; i < replicationFactor; i++) {
+            System.arraycopy(data, 0, data, input.length() * i, input.length());
         }
         final int[] basePattern = {0, 1, 0, -1};
         final int basePatternLength = basePattern.length;
@@ -22,7 +27,8 @@ public class Main {
 
         for (int phase = 0; phase < nPhases; phase++) {
             final int[] newData = new int[data.length];
-            for (int i = 0; i < data.length; i++) {
+            final int middle = data.length / 2 + 1;
+            for (int i = offset; i < middle; i++) {
                 final int patternRepeat = i + 1;
                 final int patternPeriod = basePatternLength * patternRepeat;
 
@@ -31,10 +37,20 @@ public class Main {
 
                 newData[i] = Math.abs(plusOne - minusOne) % 10;
             }
+
+            int sum = 0;
+            for (int i = middle - 1; i < data.length; i++) {
+                sum += data[i];
+            }
+
+            for (int i = middle; i < data.length; i++) {
+                sum -= data[i - 1];
+                newData[i] = sum % 10;
+            }
             data = newData;
         }
 
-        print(data);
+        print(data, offset, 8);
     }
 
     private static int applyPattern(final int[] data, final int offset, final int repeat, final int period) {
@@ -47,8 +63,8 @@ public class Main {
         return sum;
     }
 
-    private static void print(final int[] data) {
-        for (int i = 0; i < 8; i++) {
+    private static void print(final int[] data, final int offset, final int length) {
+        for (int i = offset; i < offset + length; i++) {
             final int digit = data[i];
             System.out.print(digit);
         }
