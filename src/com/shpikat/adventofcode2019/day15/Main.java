@@ -56,9 +56,9 @@ public class Main {
 
         solver.explore(new Coordinate(0, 0));
         System.out.println("All paths covered");
-        final int steps = solver.findShortest();
+        final int steps = solver.fillAllFromTarget();
 
-        System.out.println("Shortest path: " + steps);
+        System.out.println("All filled in: " + steps);
 
         // check for normal termination
 //        future.get();
@@ -71,6 +71,7 @@ public class Main {
         private final BlockingQueue<Long> input;
         private final BlockingQueue<Long> output;
         private final Future<Void> future;
+        private Coordinate target;
 
         private PrettySolver(final BlockingQueue<Long> input, final BlockingQueue<Long> output, final Future<Void> future) {
             this.input = input;
@@ -99,6 +100,7 @@ public class Main {
                             throw new IllegalStateException("Failed to reverse!");
                         }
                     } else if (status == 2) {
+                        target = next;
                         grid.put(next, TARGET);
                         System.out.println("Found! " + next);
                         explore(next);
@@ -112,23 +114,23 @@ public class Main {
             }
         }
 
-        public int findShortest() {
+        int fillAllFromTarget() {
             final Queue<Step> queue = new ArrayDeque<>();
-            queue.add(new Step(new Coordinate(0, 0), 1L));
+            queue.add(new Step(target, 1L));
+            long max = 0;
             while (!queue.isEmpty()) {
                 final Step current = queue.remove();
                 final Long value = grid.get(current.coordinate);
-                if (value == 0L) {
+                if (value == 0L || value.equals(TARGET)) {
                     grid.put(current.coordinate, current.step);
+                    max = Math.max(max, current.step);
                     for (final Direction direction : Direction.values()) {
                         queue.add(new Step(direction.next(current.coordinate), current.step + 1));
                     }
                     repaint();
-                } else if (value.equals(TARGET)) {
-                    return current.step.intValue() - 1;
                 }
             }
-            throw new IllegalStateException("Target not found");
+            return (int) (max - 1);
         }
 
 
