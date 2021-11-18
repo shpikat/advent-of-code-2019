@@ -22,7 +22,7 @@ public class Day09 {
     }
 
     private static List<Long> solve(final String input, final long inputValue) throws InterruptedException {
-        final Intcode computer = Intcode.fromInput(input, 100);
+        final Intcode computer = Intcode.fromInput(input, 32);
         computer.input.put(inputValue);
         computer.call();
 

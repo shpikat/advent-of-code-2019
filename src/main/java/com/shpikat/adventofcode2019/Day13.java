@@ -21,7 +21,7 @@ public class Day13 {
     static class Part1 {
 
         static long solve(final String input) throws InterruptedException, ExecutionException {
-            final Day09.Intcode arcade = Day09.Intcode.fromInput(input, 100);
+            final Day09.Intcode arcade = Day09.Intcode.fromInput(input, 32);
 
             final ExecutorService executor = Executors.newSingleThreadExecutor();
             final Future<Void> future = executor.submit(arcade);
@@ -113,7 +113,8 @@ public class Day13 {
         }
 
         public static Intcode fromInput(final String input, final Consumer<long[]> runtimePatcher) {
-            return new Intcode(readProgram(input), createInput(10), createOutput(10), runtimePatcher);
+            final int capacity = 128;
+            return new Intcode(readProgram(input), createInput(capacity), createOutput(capacity), runtimePatcher);
         }
 
         @Override

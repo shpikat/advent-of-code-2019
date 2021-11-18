@@ -63,7 +63,7 @@ public class Day11 {
 
     private static void runProgram(final String input, final Map<Coordinate, Long> hull, final Robot robot)
             throws InterruptedException, ExecutionException {
-        final Intcode computer = Intcode.fromInput(input, 10);
+        final Intcode computer = Intcode.fromInput(input, 32);
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final Future<Void> future = executor.submit(computer);

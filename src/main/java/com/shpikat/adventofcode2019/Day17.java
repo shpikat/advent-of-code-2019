@@ -10,12 +10,12 @@ public class Day17 {
 
     static class Part1 {
         static int solve(final String input) throws InterruptedException {
-            final Day09.Intcode computer = Day09.Intcode.fromInput(input, 10);
+            final Day09.Intcode computer = Day09.Intcode.fromInput(input, 1024);
 
             final ExecutorService executor = Executors.newSingleThreadExecutor();
             final Future<Void> future = executor.submit(computer);
 
-            final List<Long> buffer = new ArrayList<>(1000);
+            final List<Long> buffer = new ArrayList<>(4096);
             do {
                 if (computer.output.drainTo(buffer) < 100) {
                     Thread.sleep(50);

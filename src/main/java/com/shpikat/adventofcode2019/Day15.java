@@ -53,7 +53,7 @@ public class Day15 {
     }
 
     private static int solve(final String input, final Map<Coordinate, Long> grid, final Runnable updated, final ToIntFunction<Tracker> getAnswer) throws InterruptedException {
-        final Day09.Intcode computer = Day09.Intcode.fromInput(input, 10);
+        final Day09.Intcode computer = Day09.Intcode.fromInput(input, 32);
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final Future<Void> future = executor.submit(computer);
 
