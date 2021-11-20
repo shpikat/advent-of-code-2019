@@ -29,15 +29,16 @@ public class Day13 {
             final Map<Coordinate, Long> grid = new HashMap<>();
 
             do {
-                final Long x = arcade.output.poll(2, TimeUnit.SECONDS);
-                if (x == null && future.isDone()) {
-                    break;
+                final Long x = arcade.output.poll(100, TimeUnit.MILLISECONDS);
+                if (x == null) {
+                    // Probably the execution is over, hence no incoming data
+                    continue;
                 }
                 final Long y = arcade.output.take();
                 final Long tileId = arcade.output.take();
 
                 grid.put(new Coordinate(x.intValue(), y.intValue()), tileId);
-            } while (!future.isDone());
+            } while (!future.isDone() || !arcade.output.isEmpty());
 
             // check for normal termination
             future.get();

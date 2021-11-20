@@ -72,14 +72,15 @@ public class Day11 {
             final Long current = robot.getCurrent(hull);
             computer.input.put(current);
 
-            final Long colour = computer.output.poll(2, TimeUnit.SECONDS);
-            if (colour == null && future.isDone()) {
-                break;
+            final Long colour = computer.output.poll(100, TimeUnit.MILLISECONDS);
+            if (colour == null) {
+                // Probably the execution is over, hence no incoming data
+                continue;
             }
             robot.paint(hull, colour);
             final Long rotation = computer.output.take();
             robot.move(rotation);
-        } while (!future.isDone());
+        } while (!future.isDone() || !computer.output.isEmpty());
 
         // check for normal termination
         future.get();
