@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +36,7 @@ public class Day13 {
     static class Part1 {
 
         static long solve(final String input) throws InterruptedException, ExecutionException {
-            final Day09.Intcode arcade = Day09.Intcode.fromInput(input, 32);
+            final Intcode arcade = Intcode.fromInput(input, 32);
 
             final ExecutorService executor = Executors.newSingleThreadExecutor();
             final Future<Void> future = executor.submit(arcade);
@@ -79,7 +78,7 @@ public class Day13 {
 
         private static long solve(final String input, final Map<Coordinate, Long> grid, final Consumer<Long> scoreUpdated, final Runnable updated) throws InterruptedException, ExecutionException {
             final Consumer<long[]> gameWizard = memory -> memory[0] = 2;
-            final Day13.Intcode arcade = Day13.Intcode.fromInput(input, gameWizard);
+            final Intcode arcade = Intcode.fromInput(input, OUTPUT_CAPACITY, gameWizard);
 
             final ExecutorService executor = Executors.newSingleThreadExecutor();
             final Future<Void> future = executor.submit(arcade);
@@ -136,47 +135,6 @@ public class Day13 {
     }
 
     private record Coordinate(int x, int y) {
-    }
-
-    private static class Intcode extends Day09.Intcode {
-        private final Consumer<long[]> runtimePatcher;
-
-        private Intcode(final long[] program,
-                        final BlockingQueue<Long> input,
-                        final BlockingQueue<Long> output,
-                        final Consumer<long[]> runtimePatcher) {
-            super(program, input, output);
-            this.runtimePatcher = runtimePatcher;
-        }
-
-        public static Intcode fromInput(final String input, final Consumer<long[]> runtimePatcher) {
-            return new Intcode(readProgram(input), createInput(16), createOutput(OUTPUT_CAPACITY), runtimePatcher);
-        }
-
-        @Override
-        public Void call() throws InterruptedException {
-            final Runtime runtime = new Runtime(program, input, output, runtimePatcher);
-            runtime.execute();
-            return null;
-        }
-
-        private static class Runtime extends Day09.Intcode.Runtime {
-            private final Consumer<long[]> patcher;
-
-            Runtime(final long[] program,
-                    final BlockingQueue<Long> input,
-                    final BlockingQueue<Long> output,
-                    final Consumer<long[]> patcher) {
-                super(program, input, output);
-                this.patcher = patcher;
-            }
-
-            @Override
-            void execute() throws InterruptedException {
-                patcher.accept(memory);
-                super.execute();
-            }
-        }
     }
 
     private static class DemoPanel extends JPanel {
