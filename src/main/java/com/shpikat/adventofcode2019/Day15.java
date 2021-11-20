@@ -276,6 +276,7 @@ public class Day15 {
 
         private void done() {
             done.lazySet(true);
+            repaint();
         }
     }
 
