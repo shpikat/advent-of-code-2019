@@ -10,7 +10,7 @@ public class Day17 {
 
     static class Part1 {
         static int solve(final String input) throws InterruptedException {
-            final Day09.Intcode computer = Day09.Intcode.fromInput(input, 1024);
+            final Intcode computer = Intcode.fromInput(input, 1024);
 
             final ExecutorService executor = Executors.newSingleThreadExecutor();
             final Future<Void> future = executor.submit(computer);

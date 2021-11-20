@@ -1,7 +1,5 @@
 package com.shpikat.adventofcode2019;
 
-import com.shpikat.adventofcode2019.Day09.Intcode;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
