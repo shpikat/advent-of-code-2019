@@ -22,4 +22,14 @@ public class Day17Test {
             assertEquals(11372, Day17.Part1.solve(readInput("day17_input.txt")));
         }
     }
+
+    @DisplayName("part 2")
+    @Nested
+    class Part2Test {
+        @DisplayName("How much dust does the vacuum robot report it has collected")
+        @Test
+        void testSolution() throws IOException, ExecutionException, InterruptedException {
+            assertEquals(1155497, Day17.Part2.solve(readInput("day17_input.txt")));
+        }
+    }
 }
