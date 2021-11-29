@@ -1,5 +1,7 @@
 ## Advent of Code 2019
 
+[![Check all solutions](https://github.com/shpikat/advent-of-code-2019/actions/workflows/check-solutions.yml/badge.svg)](https://github.com/shpikat/advent-of-code-2019/actions/workflows/check-solutions.yml)
+
 > _Advent of Code_ is an Advent calendar of small programming puzzles for a variety of skill sets and skill levels that can be solved in any programming language you like.
 
 See more at https://adventofcode.com/2019/about
