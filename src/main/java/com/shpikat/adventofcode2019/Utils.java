@@ -10,6 +10,6 @@ class Utils {
         return new String(
                 requireNonNull(Utils.class.getResourceAsStream("/" + filename)).readAllBytes(),
                 StandardCharsets.ISO_8859_1
-        ).trim();
+        ).stripTrailing();
     }
 }
