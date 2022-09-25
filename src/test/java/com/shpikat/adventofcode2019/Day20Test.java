@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Named.named;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@DisplayName("Day 18")
+@DisplayName("Day 20")
 public class Day20Test {
 
     private static final Named<String> sample1 = named("sample 1", """
