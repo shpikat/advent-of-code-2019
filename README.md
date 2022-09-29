@@ -14,6 +14,6 @@ Haven't managed to finish it completely yet, but I'm still looking forward to it
 
 After completing Advent of Code 2020 (see [shpikat/advent-of-code-2020](https://github.com/shpikat/advent-of-code-2020) by the way), I realized I should've organized that a tad differently. So here comes The Great Refactor of 2021, where the solution verification is done through JUnit test suites.
 
-Although there are days [13](src/main/java/com/shpikat/adventofcode2019/Day13.java) and [15](src/main/java/com/shpikat/adventofcode2019/Day15.java) where some user interaction is provided. Those can be run through their `main` entrypoint.
+Although there are days [13](src/main/java/com/shpikat/adventofcode2019/Day13.java), [15](src/main/java/com/shpikat/adventofcode2019/Day15.java) and [25](src/main/java/com/shpikat/adventofcode2019/Day25.java) where some user interaction is provided. Those can be run through their `main` entrypoint.
 
 Also, both parts of the solution are important. Unfortunately I realized I should keep records of all my steps a little too late, so a few days in the beginning of the journey are missing their part 1. The rest of them have them recovered from the history. 
